@@ -1,0 +1,15 @@
+# Python-related files
+__pycache__
+.vscode/
+
+# Virtual environment
+venv/
+.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+*.png
