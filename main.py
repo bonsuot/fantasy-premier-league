@@ -19,6 +19,7 @@ def main():
     teams = get_team_stat()
     positions = get_positions()
 
+    # get player ids to be used below
     player_ids = players['player_id'].to_list()
 
     fixtures = get_fixtures(player_ids)
@@ -33,6 +34,7 @@ def main():
             'positions': positions
         }
     
+    # these tables will always be dropped first and recreated for any reruns
     tables_data_non_pk = {
             'fixtures': fixtures,
             'history': history,
@@ -52,17 +54,29 @@ def main():
     """
     Insert data. Can comment below out after
     first insertion of data. Update process will update tables
+    when you run this again
     """
     insert_data(tables_data, cursor)
     insert_data(tables_data_non_pk, cursor)
+
+    """
+    Uncomment to update tables when re-running this script
+    Make sure to comment out insert_data(tables_data, cursor) above
+    """
+    # for table_name, df in tables_data.items():
+    #     execute_plsql_update(df, cursor, table_name)
+
 
     # save season data as csv files (optional)
     for season in seasons:
         fetch_and_save_season_data(season, cursor)
 
-    # check and update table with new data
-    for table_name, df in tables_data.items():
-        execute_plsql_update(df, cursor, table_name)
+    # generate csv file data for ongoing season
+    player_current_season_data(cursor)
+
+    # generate data for past seasons. Data only availabe from 2017-18 season
+    for season in seasons:
+        player_season_data(season, cursor)
 
     # Commit and close the connection
     conn.commit()

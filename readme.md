@@ -67,8 +67,10 @@ python3 main.py
 
 ### Expected Output
 
-- All data is stored in the specified Oracle database tables on your local machine.
-- CSV files are generated for historical data, stored in the data/season/<year> folders.Seasonal data before 2021/22 season is not fully completed (will be added). You can always refer to vaastav repo for full data.
+- All data is stored in the specified Oracle database tables on your local machine. Few csv files have been generated.
+- data/players: contains all players stats in past seasons
+- data/teams: contains teams in past sesasons
+- data/current_season_stats.csv contains all player stats in ongoing season
 
 ## Tables
 - **PLAYERS**: Basic information on all Premier League players

@@ -149,7 +149,7 @@ with requests.Session() as session:
         dropping duplicates because for players in the same team
         the fixtures will be duplicated
         """
-        df_fixtures.drop_duplicates(inplace=True)
+        # df_fixtures.drop_duplicates(inplace=True) no need to drop dulicates
 
         return df_fixtures
 

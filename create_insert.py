@@ -114,12 +114,11 @@ def create_table(table_dict, cursor):
 def create_table_non_pk(table_dict, cursor):
     for table_name, df in tqdm(table_dict.items(), desc="Creating tables"):
             
-            cursor.execute(f"SELECT COUNT(*) FROM USER_TABLES WHERE TABLE_NAME = UPPER(:1)", [table_name])
-            table_exists = cursor.fetchone()[0] > 0
-
-            if table_exists:
-                print(f"Table {table_name} already exists. Skipping creation.")
-                continue
+            try:
+                cursor.execute(f"DROP TABLE {table_name}")
+                print(f"Table {table_name} dropped successfully.")
+            except cx_Oracle.DatabaseError as e:
+                print(f"Table {table_name} does not exist or could not be dropped: {e}")
 
             create_table_sql = create_table_query_non_pk(df, table_name)
 
