@@ -16,42 +16,41 @@ def main():
     player_ids = get_player_ids()
 
     # get all data
-    # gameweeks = get_gameweeks()
-    # players = get_player_stat()
-    # teams = get_team_stat()
-    # positions = get_positions()
-    # fixtures = get_fixtures(player_ids)
-    # history = get_history(player_ids)
-    # history_past = get_history_past(player_ids)
+    gameweeks = get_gameweeks()
+    players = get_player_stat()
+    teams = get_team_stat()
+    positions = get_positions()
+    fixtures = get_fixtures(player_ids)
+    history = get_history(player_ids)
+    history_past = get_history_past(player_ids)
 
     # tables and their respective data
-    # tables_data = {
-    #         'gameweeks': gameweeks,
-    #         'players': players,
-    #         'teams': teams,
-    #         'positions': positions,
-    #         'fixtures': fixtures,
-    #         'history': history,
-    #         'history_past': history_past
-    #     }
+    tables_data = {
+            'gameweeks': gameweeks,
+            'players': players,
+            'teams': teams,
+            'positions': positions,
+            'fixtures': fixtures,
+            'history': history,
+            'history_past': history_past
+        }
     
     # connect to the database
     conn, cursor = connect_to_db()
     
     # create tables in the database
-    # create_table(tables_data, cursor)
-    
+    create_table(tables_data, cursor)
 
     # update or insert data into tables
-    # upsert_insert_data(tables_data, cursor)
+    upsert_insert_data(tables_data, cursor)
 
     """
     uncomment to generate csv files if needed
     update sql query in generate_files.py as you seem fit
     """
     # save season data as csv files (optional)
-    for season in seasons:
-        fetch_and_save_season_data(season, cursor)
+    # for season in seasons:
+    #     fetch_and_save_season_data(season, cursor)
 
     # generate csv file data for ongoing season
     # player_current_season_data(cursor)
@@ -59,6 +58,7 @@ def main():
     # generate data for past seasons. Data only availabe from 2017-18 season
     # for season in seasons:
     #     player_season_data(season, cursor)
+
 
     # Commit and close the connection
     conn.commit()
