@@ -26,7 +26,7 @@ Before setting up the project, ensure you have the following software installed:
 
 - **Python 3.8+**
 - **Oracle Database** 
-- **cx_Oracle** for connecting Python with Oracle
+- **oracledb** for connecting Python with Oracle
 - **pandas**, **requests**, **tqdm**, Python libraries
 
 The project was all completed using VSCode.
@@ -34,7 +34,12 @@ The project was all completed using VSCode.
 To install the required Python libraries, run:
 ```
 bash
-pip install cx_Oracle pandas requests tqdm 
+pip install oracledb pandas requests tqdm 
+```
+
+```
+windows
+pip install oracledb pandas requests tqdm 
 ```
 
 ### Installation Instructions
@@ -54,16 +59,20 @@ pip install cx_Oracle pandas requests tqdm
 Execute main.py by running in interactive window in VSCode or on the command line 
 ```
 bash
-python3 main.py
+$ python3 main.py
+```
+
+```
+windows
+> python main.py
 ```
 
 ### Python Files
 - **dbconn.py** : For creating and connecting to your Oracle database. Make sure to input your username and password
 - **base_scrapper.py** : Fectching data from FPL API
 - **operations.py** : Generating pandas dataframes to load into the database
-- **create_insert.py** : Dynamically create tables base on pandas dataframes and insert data into tables. You can comment this out after first run. update_table.py will update the tables if necessary
+- **create_database_table.py** : Dynamically create tables base on pandas dataframes **insert_update.py** : Insert data into tables or Update table data when necessary
 - **generate_files.py** : Generating csv data files. You can follow the example to query your database to generate any data file you want
-- **update_table.py** : For updating players, gameweeks, postions, and teams table
 
 ### Expected Output
 

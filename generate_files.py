@@ -5,6 +5,10 @@ from datetime import datetime
 
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
+print("=" * 50)
+print("Generating csv files and saving in specified folders ...")
+print("=" * 50)
+
 def fetch_and_save_season_data(season, cursor):
     # SQL query to get data for the specified season
     query = f"""
@@ -42,6 +46,7 @@ def fetch_and_save_season_data(season, cursor):
 
 
 def player_season_data(season, cursor):
+    
     # SQL query to generate players stats for diffferent seasons
     query = f"""
         select p.WEB_NAME,p.PLAYER_ID,p.POS_ID,p.PHOTO,
@@ -66,6 +71,7 @@ def player_season_data(season, cursor):
 
 
 def player_current_season_data(cursor):
+    
     # SQL query to generate players stats for diffferent seasons
     query = f"""
         select p.first_name || ' ' || p.second_name as name,p.WEB_NAME,

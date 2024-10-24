@@ -7,6 +7,15 @@ logging.basicConfig(level=logging.INFO)
 
 # base url
 def get_data(top_level_key, session, timeout=10):
+    """
+    Function to scrap data from Fanatsy API
+
+    Args:
+        top_level_key: available keys eg. 'elements' for player data
+
+    Returns:
+        A pandas dataframe
+    """
     url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
 
     try:
@@ -34,12 +43,16 @@ def get_data(top_level_key, session, timeout=10):
         # If something went wrong, return an empty DataFrame
         return pd.DataFrame()
 
-"""
-fetching individual player data (fixtures, history, history_past)
-"""
+
 def fetch_player_data(player_id, session):
     """
-    Fetch player data from the API.
+    Function for fetching individual player data (fixtures, history, history_past)
+    
+    Args:
+        Individual player ids and session
+
+    Returns:
+        pandas dataframe
     """
     base_url = f"https://fantasy.premierleague.com/api/element-summary/{player_id}/"
     response = session.get(base_url)

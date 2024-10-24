@@ -1,16 +1,35 @@
-import cx_Oracle
+import oracledb
+
+cs = 'localhost/XEPDB1'
 
 # connect to Oracle db
 def connect_to_db():
-    try:
-        dsn_tns = cx_Oracle.makedsn('localhost', '1521', service_name='XEPDB1') 
-        connection = cx_Oracle.connect(user='your_username', password='your_password', dsn=dsn_tns)
-        print("Connected to Database successfully!")
-        return connection
-    except cx_Oracle.DatabaseError as e:
-        print(f"Error connecting to Database: {e}")
-        return None
+        """
+        create Oracle databse connection
+        Returns:
+            tuple: connection, cursor
+        """
+        try:
 
-# if __name__ == "__main__":
-#     connect_to_db()
+            try:
+                oracledb.init_oracle_client()
+            except Exception:
+                    # If already initialized or thick mode not available, continue
+                pass
+            
+            connection = oracledb.connect(user="DEV2", password="bonsuot92", dsn=cs)
+            # Create a cursor
+            cursor = connection.cursor()
+            print("\n")
+            print("=" * 50)
+            print("Connection to Oracle database successful!")
+            print("=" * 50)
+            return connection, cursor
+
+   
+        except oracledb.Error as e:
+            error_obj, = e.args
+            print(f"Error Code: {error_obj.code}")
+            print(f"Error Message: {error_obj.message}")
+            return None, None
 
