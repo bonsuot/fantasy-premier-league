@@ -17,7 +17,7 @@ def connect_to_db():
                     # If already initialized or thick mode not available, continue
                 pass
             
-            connection = oracledb.connect(user="DEV2", password="bonsuot92", dsn=cs)
+            connection = oracledb.connect(user="your_username", password="password", dsn=cs)
             # Create a cursor
             cursor = connection.cursor()
             print("\n")
