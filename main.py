@@ -1,4 +1,4 @@
-from dbconn import connect_to_db
+from dbconn import connect_to_cloud_db
 from base_scrapper import *
 from operations import *
 from create_database_table import *
@@ -36,29 +36,30 @@ def main():
         }
     
     # connect to the database
-    conn, cursor = connect_to_db()
-    
+    conn, cursor = connect_to_cloud_db()
+    # conn, cursor = connect_to_db() # local connection
+
     # create tables in the database
     create_table(tables_data, cursor)
 
     # update or insert data into tables
-    upsert_insert_data(tables_data, cursor)
+    for table_name, df in (tables_data.items()):
+        upsert_insert_data(table_name, df, cursor)
 
     """
     uncomment to generate csv files if needed
     update sql query in generate_files.py as you seem fit
     """
     # save season data as csv files (optional)
-    # for season in seasons:
-    #     fetch_and_save_season_data(season, cursor)
+    for season in seasons:
+        fetch_and_save_season_data(season, cursor)
 
     # generate csv file data for ongoing season
-    # player_current_season_data(cursor)
+    player_current_season_data(cursor)
 
     # generate data for past seasons. Data only availabe from 2017-18 season
-    # for season in seasons:
-    #     player_season_data(season, cursor)
-
+    for season in seasons:
+        player_season_data(season, cursor)
 
     # Commit and close the connection
     conn.commit()
