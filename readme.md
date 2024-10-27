@@ -30,7 +30,11 @@ Before setting up the project, ensure you have the following software installed:
 - **Prefect** for scheduling and automation
 - **pandas**, **requests**, **tqdm**, Python libraries
 
-The project was all completed using VSCode.
+
+
+### Installation Instructions
+
+1. The project was all completed using VSCode.
 
 To install the required Python libraries, run:
 ```
@@ -42,22 +46,19 @@ pip install oracledb pandas requests tqdm prefect
 windows
 pip install oracledb pandas requests tqdm prefect
 ```
-
-### Installation Instructions
-
-1. Clone the repository
+2. Clone the repository
 ```
   git clone https://github.com/bonsuot/fantasy-premier-league
   cd fantasy-premier-league
 ```
-2. Database Setup
+3. Database Setup
    - Ensure your Oracle database is up and running. You can install the Oracle db extension in VSCode. Refer to dbconn.py to setup your database
    - Download the Oracle Instant Client for your operating system from [here](https://www.oracle.com/database/technologies/instant-client.html)
    - See [instructions](https://docs.oracle.com/en/database/oracle/developer-tools-for-vscode/getting-started/gettingstarted.html) for how to set up your database connection
    - Update the database connection details in the dbconn.py file to reflect your Oracle connection settings.
  - 
-3. Learn more about using prefect for scheduling and automation. Visit [Prefect Quickstart](https://docs.prefect.io/3.0/get-started/quickstart)
-4. 
+4. Learn more about using prefect for scheduling and automation. Visit [Prefect Quickstart](https://docs.prefect.io/3.0/get-started/quickstart)
+
 ### How to run the project
 
 Execute main.py by running in interactive window in VSCode or on the command line 
