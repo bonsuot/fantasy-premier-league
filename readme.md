@@ -56,7 +56,7 @@ pip install oracledb pandas requests tqdm prefect
    - Download the Oracle Instant Client for your operating system from [here](https://www.oracle.com/database/technologies/instant-client.html)
    - See [instructions](https://docs.oracle.com/en/database/oracle/developer-tools-for-vscode/getting-started/gettingstarted.html) for how to set up your database connection
    - Update the database connection details in the dbconn.py file to reflect your Oracle connection settings.
- - 
+  
 4. Learn more about using prefect for scheduling and automation. Visit [Prefect Quickstart](https://docs.prefect.io/3.0/get-started/quickstart)
 
 ### How to run the project
