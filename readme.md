@@ -8,7 +8,7 @@ This project emerged from a passion for data analysis and the popular Fantasy Pr
 
 ## Project Objective
 
-This project is designed to extract, transform, and load data from the Fantasy Premier League API into a local Oracle database. The project aims to automate data retrieval, processing, and storage for player and team statistics, enabling in-depth analysis of FPL data.
+This project is designed to extract, transform, and load data from the Fantasy Premier League API into a local / cloud Oracle database. The project aims to automate data retrieval, processing, and storage for player and team statistics, enabling in-depth analysis of FPL data.
 
 ### Key Features
 
@@ -16,7 +16,7 @@ This project is designed to extract, transform, and load data from the Fantasy P
 - **Data Transformation**: Cleans, processes, and formats the data for consistency and analysis.
 - **Data Loading**: Dynamically create database tables and Stores the processed data in an Oracle database.
 - **Generate Data Files**: Supports generating data files how you see fit using SQL query.
-- **Scheduling and Automation**: In progress.
+- **Scheduling and Automation**: Schedule ETL run using Prefect
 
 ## Getting Started
 
@@ -27,6 +27,7 @@ Before setting up the project, ensure you have the following software installed:
 - **Python 3.8+**
 - **Oracle Database** 
 - **oracledb** for connecting Python with Oracle
+- **Prefect** for scheduling and automation
 - **pandas**, **requests**, **tqdm**, Python libraries
 
 The project was all completed using VSCode.
@@ -34,12 +35,12 @@ The project was all completed using VSCode.
 To install the required Python libraries, run:
 ```
 bash
-pip install oracledb pandas requests tqdm 
+pip install oracledb pandas requests tqdm prefect
 ```
 
 ```
 windows
-pip install oracledb pandas requests tqdm 
+pip install oracledb pandas requests tqdm prefect
 ```
 
 ### Installation Instructions
@@ -51,9 +52,12 @@ pip install oracledb pandas requests tqdm
 ```
 2. Database Setup
    - Ensure your Oracle database is up and running. You can install the Oracle db extension in VSCode. Refer to dbconn.py to setup your database
-   - Download the Oracle Instant Client for your operating system from https://www.oracle.com/database/technologies/instant-client.html
-   - Update the database connection details in the dbconn.py file to reflect your Oracle instance settings.
-
+   - Download the Oracle Instant Client for your operating system from [here](https://www.oracle.com/database/technologies/instant-client.html)
+   - See [instructions](https://docs.oracle.com/en/database/oracle/developer-tools-for-vscode/getting-started/gettingstarted.html) for how to set up your database connection
+   - Update the database connection details in the dbconn.py file to reflect your Oracle connection settings.
+ - 
+3. Learn more about using prefect for scheduling and automation. Visit [Prefect Quickstart](https://docs.prefect.io/3.0/get-started/quickstart)
+4. 
 ### How to run the project
 
 Execute main.py by running in interactive window in VSCode or on the command line 
@@ -67,18 +71,32 @@ windows
 > python main.py
 ```
 
+For running prefect ETL schedule locally
+```
+bash
+$ python3 fpl_etl.py
+```
+
+```
+windows
+> python fpt_etl.py
+```
+
 ### Python Files
-- **dbconn.py** : For creating and connecting to your Oracle database. Make sure to input your username and password
-- **base_scrapper.py** : Fectching data from FPL API
+- **dbconn.py** : For oracle database connection
+- **base_scrapper.py** : Fectching data from Fantasy API
 - **operations.py** : Generating pandas dataframes to load into the database
-- **create_database_table.py** : Dynamically create tables base on pandas dataframes **insert_update.py** : Insert data into tables or Update table data when necessary
-- **generate_files.py** : Generating csv data files. You can follow the example to query your database to generate any data file you want
+- **create_database_table.py** : Dynamically create tables base on pandas dataframes 
+- **insert_update.py** : Insert data into tables or Update table data when necessary
+- **generate_files.py** : Generating csv data files
+- **fpl_etl.py** : Prefect flow script
+- **deployment.py** : ETL automation script
 
 ### Expected Output
 
-- All data is stored in the specified Oracle database tables on your local machine. Few csv files have been generated.
+- All data is stored in the specified Oracle database tables on your local machine / Oracle cloud
 - data/players: contains all players stats in past seasons
-- data/teams: contains teams in past sesasons
+- data/teams: contains teams in past / current sesasons
 - data/current_season_stats.csv contains all player stats in ongoing season
 
 ## Tables
@@ -103,6 +121,10 @@ Common Issues
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+Reach out with any questions and contributions
+
+Do not forget to reference this repo if used in any projects
+
 ## Contact
-- Author: Osei Bonsu (kt.bonsu@gmail.com)
+- Author: Tutu Bonsu (kt.bonsu@gmail.com)
 - GitHub: https://github.com/bonsuot
