@@ -4,18 +4,16 @@ from tqdm import tqdm
 from base_scrapper import *
 
 with requests.Session() as session:
-    print("\nScrapping necessary Data from Fanatsy API...")
+    print("\nStarting data scrapping from Fanatsy Premier League API ...")
     print("=" * 50)
         
     def get_gameweeks():
         """
         Retrieve Gameweeks data from Fantasy API
-        Returns:
-            dataframe: pandas dataframe
         """
         df = get_data("events", session) # Contains gameweek stats
-        if df.empty == False:
-            print("Gameweeks data scrapped successfully")
+        # if df.empty == False:
+        #     print("Gameweeks data scrapped successfully")
 
         df = df[['id','name','deadline_time','deadline_time_epoch','average_entry_score','finished',
                 'data_checked','highest_score','ranked_count','chip_plays',
@@ -50,13 +48,10 @@ with requests.Session() as session:
     def get_player_stat():
         """
         Retrieve Players data from Fantasy API
-        Returns:
-            dataframe: pandas dataframe
         """
-
         df = get_data("elements", session) # Contains player stats
-        if df.empty == False:
-            print("Player data scrapped successfully")
+        # if df.empty == False:
+        #     print("Player data scrapped successfully")
 
         # extract relevant columns
         df = df[['id','first_name', 'second_name', 'web_name', 'code', 'element_type', 'event_points', 
@@ -80,17 +75,12 @@ with requests.Session() as session:
     def get_positions():
         """
         Retrieve Player positions data from Fantasy API
-
-        Returns:
-            dataframe: pandas dataframe
         """
-
         df = get_data("element_types", session) # Contains player positions
-        if df.empty == False:
-            print("Positions data scrapped successfully")
+        # if df.empty == False:
+        #     print("Positions data scrapped successfully")
 
         df = df[['id', 'plural_name', 'singular_name','singular_name_short', 'element_count']]
-
         df = df.rename(columns={'id':'pos_id','singular_name_short':'position_name'}) # rename column
 
         return df
@@ -100,13 +90,10 @@ with requests.Session() as session:
     def get_team_stat():
         """
         Retrieve Teams statistics data from Fantasy API
-
-        Returns:
-            dataframe: pandas dataframe
         """
         df = get_data("teams", session) # Contains team stats
-        if df.empty == False:
-            print("Teams data scrapped successfully")
+        # if df.empty == False:
+        #     print("Teams data scrapped successfully")
 
         df = df[['id', 'code', 'name','short_name', 'win', 'draw', 'loss', 'played', 'points',
         'position', 'strength','strength_overall_home', 'strength_overall_away',
@@ -121,24 +108,15 @@ with requests.Session() as session:
         """
         Retrieve the IDs of players from player data
         The IDs are used to get individual player statistics and fixtures
-
-        Returns:
-            list of player ids
         """
-        players = get_player_stat()
-        player_ids = players['player_id'].to_list()
+        df = get_data("elements", session)
+        player_ids = df['id'].to_list()
 
         return player_ids
 
     def get_fixtures(player_ids):
         """
         Get players fixtures
-
-        Args:
-            player IDs
-        
-        Returns:
-            dataframe: pandas dataframe
         """
         all_fixtures = []
         
@@ -163,12 +141,6 @@ with requests.Session() as session:
     def get_history(player_ids):
         """
         Get past gameweeks stats for each player
-
-        Args:
-            player IDs
-        
-        Returns:
-            dataframe: pandas dataframe
         """
         
         all_history = []
@@ -187,18 +159,13 @@ with requests.Session() as session:
 
         df_history['kickoff_time'] = pd.to_datetime(df_history['kickoff_time'])
         df_history['kickoff_time'] = df_history['kickoff_time'].dt.strftime('%Y-%m-%d %I:%M %p')
+        df_history = df_history.fillna(0) # Replace NaN values with 0
 
         return df_history
     
     def get_history_past(player_ids):
         """
         Get past season stats for individual players
-
-        Args:
-            player IDs
-        
-        Returns:
-            dataframe: pandas dataframe
         """
         all_history_past = []
         
