@@ -1,0 +1,29 @@
+# prefect.yaml
+name: fantasy-premier-league
+prefect-version: 3.0.10
+
+work_pool:
+  name: fpl-pool
+
+build: null
+
+push: null
+
+pull: null
+
+deployments:
+- name: fpl-deployment
+  version: null
+  tags: ['fpl_etl','database','api']
+  description: "Deployment for the FPL ETL pipeline"
+  flow_name: fpl_etl_pipeline
+  entrypoint: fpl_etl.py:main_flow
+  parameters: {}
+schedules:
+  cron: "0 0,12 * * *"  # Every 12 hours
+  timezone: "UTC"
+  
+
+storage:
+  block_type_slug: github
+  block_name: fpl-github-repo
