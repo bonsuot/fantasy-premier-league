@@ -1,6 +1,6 @@
 # prefect.yaml
 name: fantasy-premier-league
-prefect-version: 3.0.10
+prefect-version: null
 
 work_pool:
   name: fpl-pool
