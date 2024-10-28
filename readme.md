@@ -82,8 +82,13 @@ $ python3 fpl_etl.py
 windows
 > python fpt_etl.py
 ```
+To deploy the prefect schedule using the prefect.yaml file run
+```
+> prefect deploy
+```
+and follow instructons from the CLI
 
-### Python Files
+### Files
 - **dbconn.py** : For oracle database connection
 - **base_scrapper.py** : Fectching data from Fantasy API
 - **operations.py** : Generating pandas dataframes to load into the database
@@ -91,7 +96,7 @@ windows
 - **insert_update.py** : Insert data into tables or Update table data when necessary
 - **generate_files.py** : Generating csv data files
 - **fpl_etl.py** : Prefect flow script
-- **deployment.py** : ETL automation script
+- **prefect.yaml** : YAML file for prefect deployment
 
 ### Expected Output
 
