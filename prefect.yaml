@@ -9,7 +9,10 @@ build: null
 
 push: null
 
-pull: null
+pull:
+- prefect.deployments.steps.git_clone:
+    repository: https://github.com/bonsuot/fantasy-premier-league.git
+    # credentials: "{{ prefect.blocks.github-credentials.my-credentials }}"
 
 deployments:
 - name: fpl-deployment
