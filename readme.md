@@ -86,7 +86,10 @@ To deploy the prefect schedule using the prefect.yaml file run
 ```
 > prefect deploy
 ```
-and follow instructons from the CLI
+and follow instructons from the CLI. A scheduled deployment in prefect cloud as seen below
+
+![image](https://github.com/user-attachments/assets/4549b6e7-4d33-4498-bcbf-66658df48ce8)
+
 
 ### Files
 - **dbconn.py** : For oracle database connection
