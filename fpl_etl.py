@@ -285,4 +285,6 @@ def retry_specific_flow(flow_name: str, input_data: Any) -> Any:
         raise
 
 if __name__ == "__main__":
-    main_flow()
+    main_flow.serve(
+        name="fpl-deployment"
+    )
