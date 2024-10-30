@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 from contextlib import contextmanager
 from insert_update import *
-from create_database_table import create_table_query
+from create_database_table import *
 from operations import *
 from dbconn import connect_to_cloud_db
 
@@ -85,7 +85,7 @@ def retrieve_player_id() -> List[int]:
 
 # flow for data extraction for first task
 @flow(name="extract_data")
-def extract_flow(player_ids: List[int]) -> Dict[str, Any]:
+def extract_flow(player_ids: List[int], mode: str = 'all') -> Dict[str, Any]:
     """Sub-flow handling all data extraction from API"""
     logger = get_run_logger()
     logger.info("Starting data extraction flow")
@@ -103,9 +103,16 @@ def extract_flow(player_ids: List[int]) -> Dict[str, Any]:
     extracted_data = {}
     for name, getter in data_points.items():
         try:
-            logger.info(f"Extracting {name} data")
-            extracted_data[name] = getter()
-            logger.info(f"Successfully extracted {name} data")
+            if mode == 'all': #or name in ['gameweeks', 'players', 'teams', 'positions']:
+                logger.info(f"Extracting {name} data")
+                extracted_data[name] = getter()
+                logger.info(f"Successfully extracted {name} data")
+            elif mode != 'all' and name in ['gameweeks', 'players', 'teams', 'positions']:
+                logger.info(f"Extracting {name} data")
+                extracted_data[name] = getter()
+                logger.info(f"Successfully extracted {name} data")
+            else:
+                logger.info(f"Skipping {name} data extraction as mode is not 'all' ")
         except Exception as e:
             logger.error(f"Failed to extract {name} data: {str(e)}")
             raise
@@ -133,7 +140,7 @@ def transform_flow(raw_data: Dict[str, Any]) -> Dict[str, Any]:
 @task(retries=2)
 def create_tables(tables_data: Dict[str, Any], 
                  cursor: Any, 
-                 mode: str = 'auto') -> None:
+                 create_mode: str = 'auto') -> None:
     """
     Task to create database tables based on different modes
     
@@ -143,26 +150,40 @@ def create_tables(tables_data: Dict[str, Any],
         mode: One of ['auto', 'force', 'skip', 'specific']
     """
     logger = get_run_logger()
-    logger.info(f"Table creation started with mode: {mode}")
+    logger.info(f"Table creation started with mode: {create_mode}")
     
-    existing_tables = check_tables_exist(tables_data, cursor)
-    
-    if mode == 'skip':
+    pk_keys = {'gameweeks', 'players', 'teams', 'positions'}
+    pk_data = {k: tables_data[k] for k in pk_keys if k in tables_data}
+
+    non_pk_keys = {'fixtures', 'history', 'history_past'}
+    non_pk_data = {k: tables_data[k] for k in non_pk_keys if k in tables_data}
+
+    existing_pk_tables = check_tables_exist(pk_data, cursor)
+    existing_non_pk_tables = check_tables_exist(non_pk_data, cursor)
+
+    if create_mode == 'skip':
         logger.info("Skipping table creation as mode is 'skip'")
         return
     
-    elif mode == 'force':
+    elif create_mode == 'force':
         logger.info("Force creating all tables")
-        for table_name in tables_data.keys():
-            if existing_tables[table_name]:
+        for table_name in pk_data.keys():
+            if existing_pk_tables[table_name]:
                 logger.info(f"Dropping existing table: {table_name}")
                 cursor.execute(f"DROP TABLE {table_name}")
                 sql = create_table_query(tables_data[table_name], table_name)
                 cursor.execute(sql)
-    
-    elif mode == 'auto':
+
+        for table_name in non_pk_data.keys():
+            if existing_non_pk_tables[table_name]:
+                logger.info(f"Dropping existing table: {table_name}")
+                cursor.execute(f"DROP TABLE {table_name}")
+                sql = create_non_pk_query(tables_data[table_name], table_name)
+                cursor.execute(sql)
+
+    elif create_mode == 'auto':
         logger.info("Auto-creating missing tables")
-        for table_name, exists in existing_tables.items():
+        for table_name, exists in existing_pk_tables.items():
             if not exists:
                 logger.info(f"Creating missing table: {table_name}")
                 sql = create_table_query(tables_data[table_name], table_name)
@@ -170,13 +191,52 @@ def create_tables(tables_data: Dict[str, Any],
             else:
                 logger.info(f"Skipping existing table: {table_name}")
 
+        for table_name, exists in existing_non_pk_tables.items():
+            if not exists:
+                logger.info(f"Creating missing table: {table_name}")
+                sql = create_non_pk_query(tables_data[table_name], table_name)
+                cursor.execute(sql)
+            else:
+                logger.info(f"Skipping existing table: {table_name}")   
+            
+# flow for table creation
+# @flow(name="create_table")
+# def create_table_flow(transformed_data: Dict[str, Any], create_mode: str = 'auto') -> None:
+#     """Sub-flow handling database operations"""
+#     logger = get_run_logger()
+#     logger.info("Starting table creation flow")
+    
+#     with get_db_connection() as (conn, cursor):
+#         try:
+#             logger.info("Beginning database transaction")
+#             create_tables(transformed_data, cursor, create_mode)
+#             # load_tables(transformed_data, cursor, load_mode)
+            
+#             conn.commit()
+#             logger.info("Successfully committed database transaction")
+            
+#         except Exception as e:
+#             logger.error(f"Error in create table flow, rolling back transaction: {str(e)}")
+#             conn.rollback()
+#             raise
+#         finally:
+#             logger.info("Completed table creation flow")
+
+'''******************************************************'''
+
 # task to load data into tables
 @task(retries=2)
-def load_tables(tables_data: Dict[str, Any], cursor: Any) -> None:
+def load_tables(tables_data: Dict[str, Any], cursor: Any, mode: str = 'all') -> None:
     """Task to load data into tables"""
     logger = get_run_logger()
-    
-    for table_name, data in tables_data.items():
+
+    pk_keys = {'gameweeks', 'players', 'teams', 'positions'}
+    pk_data = {k: tables_data[k] for k in pk_keys if k in tables_data}
+
+    non_pk_keys = {'fixtures', 'history', 'history_past'}
+    non_pk_data = {k: tables_data[k] for k in non_pk_keys if k in tables_data}
+
+    for table_name, data in pk_data.items():
         try:
             logger.info(f"Starting data load for table: {table_name}")
             rows_before = cursor.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
@@ -190,10 +250,29 @@ def load_tables(tables_data: Dict[str, Any], cursor: Any) -> None:
         except Exception as e:
             logger.error(f"Failed to load data for table {table_name}: {str(e)}")
             raise
+    if mode == 'all':
+        for table_name, data in non_pk_data.items():
+            try:
+                logger.info(f"Starting data load for table: {table_name}")
+                rows_before = cursor.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
+                
+                insert_non_pk_data(table_name, data, cursor) # calling module for loading
+                
+                rows_after = cursor.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
+                rows_added = rows_after - rows_before
+                
+                logger.info(f"Loaded {rows_added} new rows into {table_name}")
+            except Exception as e:
+                logger.error(f"Failed to load data for table {table_name}: {str(e)}")
+                raise
+    else:
+        logger.info("Skipping non-primary key table data load as mode is not 'all'")
 
-# flow for loading data task
-@flow(name="load_data")
-def load_flow(transformed_data: Dict[str, Any]) -> None:
+# flow for data loading
+@flow(name="create_table_load_data")
+def load_flow(transformed_data: Dict[str, Any],
+              create_mode: str = 'auto', 
+              load_mode: str = 'all') -> None:
     """Sub-flow handling database operations"""
     logger = get_run_logger()
     logger.info("Starting data load flow")
@@ -201,8 +280,8 @@ def load_flow(transformed_data: Dict[str, Any]) -> None:
     with get_db_connection() as (conn, cursor):
         try:
             logger.info("Beginning database transaction")
-            create_tables(transformed_data, cursor)
-            load_tables(transformed_data, cursor)
+            create_tables(transformed_data, cursor, create_mode)
+            load_tables(transformed_data, cursor, load_mode)
             
             conn.commit()
             logger.info("Successfully committed database transaction")
@@ -226,29 +305,50 @@ def handle_flow_failure(flow_name: str, error: str) -> None:
 
 '''******************************************************'''
 
+"""
+create_mode:
+    auto: create all tables
+    force: drop all tables and recreate
+    skip: skip table creation
+extract_mode:
+    all: extract data for all tables
+    if not all: extract data for (players, gameweeks, positions, teams)
+load_mode:
+    all: load data into all tables
+    if not all: load data into only (players, gameweeks, positions, teams)
+
+No paramater specification in main_flow equals default state (auto, all, all)
+"""
 # now the main flow to handle it all
 @flow(name="fpl_etl_pipeline")
-def main_flow() -> None:
+def main_flow(create_mode: str = 'auto', 
+              extract_mode: str = 'all', 
+              load_mode: str = 'all') -> None:
     """Main flow orchestrating the entire ETL pipeline"""
     logger = get_run_logger()
     start_time = datetime.now()
-    logger.info(f"Starting FPL ETL pipeline at {start_time}")
+    logger.info(f"Starting FPL ETL pipeline at {start_time} with create_mode: {create_mode}, extract_mode: {extract_mode}, load_mode: {load_mode}")
+    # logger.info(f"Starting FPL ETL pipeline at {start_time}")
     
     try:
         # Extract phase
-        logger.info("Starting extraction phase")
+        logger.info("Starting data extraction phase")
         player_ids = retrieve_player_id()
-        raw_data = extract_flow(player_ids)
-        logger.info("Completed extraction phase")
+        raw_data = extract_flow(player_ids, extract_mode)
+        logger.info("Completed data extraction phase")
         
         # Transform phase
         logger.info("Starting transformation phase")
         transformed_data = transform_flow(raw_data)
         logger.info("Completed transformation phase")
-        
-        # Load phase
-        logger.info("Starting load phase")
-        load_flow(transformed_data)
+
+        # logger.info("Starting table creation phase")
+        # create_table_flow(transformed_data, create_mode)
+        # logger.info("Completed table creation phase")
+
+        # Table Creation and Load phase
+        logger.info("Starting table creation and loading phase")
+        load_flow(transformed_data, create_mode, load_mode)
         logger.info("Completed load phase")
         
         end_time = datetime.now()
@@ -285,6 +385,4 @@ def retry_specific_flow(flow_name: str, input_data: Any) -> Any:
         raise
 
 if __name__ == "__main__":
-    main_flow.serve(
-        name="fpl-deployment"
-    )
+    main_flow()

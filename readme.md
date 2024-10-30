@@ -109,13 +109,13 @@ and follow instructons from the CLI. A scheduled deployment in prefect cloud as 
 - data/current_season_stats.csv contains all player stats in ongoing season
 
 ## Tables
-- **PLAYERS**: Basic information on all Premier League players
-- **TEAMS**: Basic information on all 20 PL teams
-- **POSITIONS**: The different FPL postions (FWD, MID, DEF, GKP)
-- **GAMEWEEKS**: Gameweek specific stats for the particular season
-- **FIXTURES**:Fixtures for the current season
-- **HISTORY**: In-depth info on a specific player in the current season
-- **HISTORY_PAST**: In-depth info on a specific player in the past seasons
+- **PLAYERS**: Basic information on all Premier League players in the current season
+- **TEAMS**: Basic information on all 20 PL teams in the current season
+- **POSITIONS**: The different FPL postions (FWD, MID, DEF, GKP) for the current season
+- **GAMEWEEKS**: All 38 gameweeks performace in the current season
+- **FIXTURES**: All individual player remaining fixtures in the current season
+- **HISTORY**: Gameweek player specific performance in the current season
+- **HISTORY_PAST**: All individual player performance in past seasons
 
 
 ## Troubleshooting and FAQs

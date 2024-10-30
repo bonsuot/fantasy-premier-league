@@ -16,7 +16,7 @@ def upsert_insert_data(table_name, df, cursor):
     update_columns = ', '.join([f"{col} = :{i+1}" for i, col in enumerate(df.columns) if col != primary_key])
     placeholders = ', '.join([f":{i+1}" for i in range(len(df.columns))])
 
-    print(f"\nProcessing table: {table_name}")
+    # print(f"\nProcessing table: {table_name}")
     
     # MERGE statement for upsert
     merge_sql = f"""
@@ -54,7 +54,39 @@ def upsert_insert_data(table_name, df, cursor):
             table_counts[table_name]['errors'] += 1
 
     # Print summary for this table
-    print(f"\nResults for {table_name}:")
-    print(f"  Updates: {table_counts[table_name]['updates']}")
-    print(f"  Inserts: {table_counts[table_name]['inserts']}")
-    print(f"  Errors:  {table_counts[table_name]['errors']}")
+    # print(f"\nResults for {table_name}:")
+    # print(f"  Updates: {table_counts[table_name]['updates']}")
+    # print(f"  Inserts: {table_counts[table_name]['inserts']}")
+    # print(f"  Errors:  {table_counts[table_name]['errors']}")
+
+def insert_non_pk_data(table_name, df, cursor):
+
+    table_counts = defaultdict(lambda: {'updates': 0, 'inserts': 0, 'errors': 0})
+
+    # for table_name, df in (table_dict.items()):
+        # Prepare the insert SQL statement with placeholders for each column
+    columns = ', '.join(df.columns)
+    placeholders = ', '.join([f":{i+1}" for i in range(len(df.columns))])
+    sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+
+
+        # Loop through DataFrame rows and insert into the table
+    for row in tqdm(df.itertuples(index=False, name=None), 
+                    desc=f"Processing {table_name}",
+                     total=len(df)):
+        try:
+            cursor.execute(sql, row)
+            if cursor.rowcount == 1:
+                if cursor.rowcount > 0:
+                    
+                    table_counts[table_name]['inserts'] += 1
+                else:
+                
+                    table_counts[table_name]['updates'] += 1
+        except oracledb.DatabaseError as e:
+            print(f"Error inserting data: {e}")
+
+    # print(f"\nResults for {table_name}:")
+    # print(f"  Updates: {table_counts[table_name]['updates']}")
+    # print(f"  Inserts: {table_counts[table_name]['inserts']}")
+    # print(f"  Errors:  {table_counts[table_name]['errors']}")

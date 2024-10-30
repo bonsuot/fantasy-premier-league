@@ -4,8 +4,6 @@ from tqdm import tqdm
 from base_scrapper import *
 
 with requests.Session() as session:
-    print("\nStarting data scrapping from Fanatsy Premier League API ...")
-    print("=" * 50)
         
     def get_gameweeks():
         """
