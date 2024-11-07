@@ -17,10 +17,11 @@ pull:
 - prefect.deployments.steps.git_clone:
     repository: https://github.com/bonsuot/fantasy-premier-league.git
     branch: main
-
+- prefect.deployments.steps.pip_install_requirements:
+    requirements_file: requirements.txt
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
-- name: fpl-deploy
+- name: fpl-etl-deploy
   version: null
   tags: []
   concurrency_limit: null
@@ -32,10 +33,4 @@ deployments:
     work_queue_name: null
     job_variables: {}
   enforce_parameter_schema: true
-  schedules:
-  - interval: 21600.0
-    anchor_date: '2024-11-01T19:30:20.696167+00:00'
-    timezone: UTC
-    active: true
-    max_active_runs: null
-    catchup: false
+  schedules: []

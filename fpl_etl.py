@@ -322,8 +322,8 @@ No paramater specification in main_flow equals default state (auto, all, all)
 # now the main flow to handle it all
 @flow(name="fpl_etl_pipeline")
 def main_flow(create_mode: str = 'skip', 
-              extract_mode: str = 'all', 
-              load_mode: str = 'all') -> None:
+              extract_mode: str = 'not all', 
+              load_mode: str = 'not all') -> None:
     """Main flow orchestrating the entire ETL pipeline"""
     logger = get_run_logger()
     start_time = datetime.now()
@@ -385,4 +385,4 @@ def retry_specific_flow(flow_name: str, input_data: Any) -> Any:
         raise
 
 if __name__ == "__main__":
-    main_flow.serve()
+    main_flow()
